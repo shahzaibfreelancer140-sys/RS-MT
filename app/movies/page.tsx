@@ -6,7 +6,7 @@ import Link from "next/link";
 async function getTMDBMovies() {
   try {
     const response = await fetch(
-      "http://localhost:3000/api/tmdb",
+      `${process.env.NEXT_PUBLIC_SITE_URL}/api/tmdb`,
       {
         cache: "no-store",
       }
