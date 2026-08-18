@@ -5,16 +5,72 @@ import Link from "next/link";
 
 async function getTMDBMovies() {
   try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_SITE_URL}/api/tmdb`,
-      {
-        cache: "no-store",
-      }
-    );
+    const token = process.env.TMDB_ACCESS_TOKEN;
 
-    if (!response.ok) return null;
+    if (!token) {
+      console.error("TMDB_ACCESS_TOKEN is missing");
+      return null;
+    }
 
-    return await response.json();
+    const headers = {
+      Authorization: `Bearer ${token}`,
+      accept: "application/json",
+    };
+
+    const [popular, nowPlaying, topRated, upcoming] =
+      await Promise.all([
+        fetch(
+          "https://api.themoviedb.org/3/movie/popular?language=en-US&page=1",
+          {
+            headers,
+            cache: "no-store",
+          }
+        ),
+        fetch(
+          "https://api.themoviedb.org/3/movie/now_playing?language=en-US&page=1",
+          {
+            headers,
+            cache: "no-store",
+          }
+        ),
+        fetch(
+          "https://api.themoviedb.org/3/movie/top_rated?language=en-US&page=1",
+          {
+            headers,
+            cache: "no-store",
+          }
+        ),
+        fetch(
+          "https://api.themoviedb.org/3/movie/upcoming?language=en-US&page=1",
+          {
+            headers,
+            cache: "no-store",
+          }
+        ),
+      ]);
+
+    if (
+      !popular.ok ||
+      !nowPlaying.ok ||
+      !topRated.ok ||
+      !upcoming.ok
+    ) {
+      throw new Error("TMDB request failed");
+    }
+
+    const data = await Promise.all([
+      popular.json(),
+      nowPlaying.json(),
+      topRated.json(),
+      upcoming.json(),
+    ]);
+
+    return {
+      popular: data[0].results,
+      nowPlaying: data[1].results,
+      topRated: data[2].results,
+      upcoming: data[3].results,
+    };
   } catch (error) {
     console.error("TMDB ERROR:", error);
     return null;
