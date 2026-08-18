@@ -1,7 +1,11 @@
+export const dynamic = "force-dynamic";
+
+
 import MovieCard from "@/components/MovieCard";
 import prisma from "@/lib/prisma";
 import MovieSearch from "@/components/MovieSearch";
 import Link from "next/link";
+
 
 async function getTMDBMovies() {
   try {
