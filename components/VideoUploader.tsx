@@ -13,7 +13,7 @@ export default function VideoUploader({ onSuccess }: Props) {
       options={{
         resourceType: "video",
         maxFiles: 1,
-        chunk_size: 6000000,
+        maxChunkSize: 6000000,
       }}
       onSuccess={(result: any) => {
         const url = result?.info?.secure_url;
