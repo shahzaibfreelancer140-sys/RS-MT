@@ -1,0 +1,58 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Movie {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  posterUrl   String
+  videoUrl    String
+  genre       String
+  releaseYear Int
+  createdAt   DateTime @default(now())
+  tmdbId      Int?     @unique
+  updatedAt   DateTime @updatedAt
+}
+
+model TVShow {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  posterUrl   String
+  genre       String
+  tmdbId Int? @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  seasons     Season[]
+}
+
+model Season {
+  id          Int      @id @default(autoincrement())
+  number      Int
+  title       String?
+  description String?
+  tvShowId    Int
+  tvShow      TVShow   @relation(fields: [tvShowId], references: [id])
+  episodes    Episode[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Episode {
+  id          Int      @id @default(autoincrement())
+  number      Int
+  title       String
+  description String?
+  videoUrl    String
+  duration    Int?
+  seasonId    Int
+  season      Season   @relation(fields: [seasonId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
