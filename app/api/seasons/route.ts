@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { isAdminAuthenticated } from "@/lib/auth";
 
 // GET - All Seasons
+// Public
 export async function GET() {
   try {
     const seasons = await prisma.season.findMany({
@@ -34,7 +36,21 @@ export async function GET() {
 }
 
 // POST - Add Season
+// Admin only
 export async function POST(request: Request) {
+  const authenticated = await isAdminAuthenticated();
+
+  if (!authenticated) {
+    return NextResponse.json(
+      {
+        message: "Unauthorized",
+      },
+      {
+        status: 401,
+      }
+    );
+  }
+
   try {
     const body = await request.json();
 

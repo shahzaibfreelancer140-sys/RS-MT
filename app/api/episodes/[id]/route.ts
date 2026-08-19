@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { isAdminAuthenticated } from "@/lib/auth";
 
 // GET - Single Episode
+// Public
 export async function GET(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -49,10 +51,20 @@ export async function GET(
 }
 
 // PUT - Update Episode
+// Admin only
 export async function PUT(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const authenticated = await isAdminAuthenticated();
+
+  if (!authenticated) {
+    return NextResponse.json(
+      { message: "Unauthorized" },
+      { status: 401 }
+    );
+  }
+
   try {
     const { id } = await params;
     const episodeId = Number(id);
@@ -114,10 +126,20 @@ export async function PUT(
 }
 
 // DELETE - Delete Episode
+// Admin only
 export async function DELETE(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const authenticated = await isAdminAuthenticated();
+
+  if (!authenticated) {
+    return NextResponse.json(
+      { message: "Unauthorized" },
+      { status: 401 }
+    );
+  }
+
   try {
     const { id } = await params;
     const episodeId = Number(id);

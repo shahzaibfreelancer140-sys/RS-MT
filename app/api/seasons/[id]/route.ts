@@ -1,7 +1,9 @@
 import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import { isAdminAuthenticated } from "@/lib/auth";
 
 // GET - Single Season
+// Public
 export async function GET(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -46,10 +48,20 @@ export async function GET(
 }
 
 // PUT - Update Season
+// Admin only
 export async function PUT(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const authenticated = await isAdminAuthenticated();
+
+  if (!authenticated) {
+    return NextResponse.json(
+      { message: "Unauthorized" },
+      { status: 401 }
+    );
+  }
+
   try {
     const { id } = await params;
     const seasonId = Number(id);
@@ -107,10 +119,20 @@ export async function PUT(
 }
 
 // DELETE - Delete Season + Episodes
+// Admin only
 export async function DELETE(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const authenticated = await isAdminAuthenticated();
+
+  if (!authenticated) {
+    return NextResponse.json(
+      { message: "Unauthorized" },
+      { status: 401 }
+    );
+  }
+
   try {
     const { id } = await params;
     const seasonId = Number(id);
@@ -138,14 +160,14 @@ export async function DELETE(
       );
     }
 
-    // Pehle episodes delete
+    // Delete episodes first
     await prisma.episode.deleteMany({
       where: {
         seasonId: seasonId,
       },
     });
 
-    // Phir season delete
+    // Delete season
     await prisma.season.delete({
       where: {
         id: seasonId,

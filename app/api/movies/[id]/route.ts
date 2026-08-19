@@ -1,7 +1,9 @@
 import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import { isAdminAuthenticated } from "@/lib/auth";
 
-// GET - single movie
+// GET - Single Movie
+// Public - website ko movie details dikhane ke liye
 export async function GET(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -41,11 +43,21 @@ export async function GET(
   }
 }
 
-// PUT - update movie
+// PUT - Update Movie
+// Admin only
 export async function PUT(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const authenticated = await isAdminAuthenticated();
+
+  if (!authenticated) {
+    return NextResponse.json(
+      { error: "Unauthorized" },
+      { status: 401 }
+    );
+  }
+
   try {
     const { id } = await params;
     const movieId = Number(id);
@@ -106,14 +118,23 @@ export async function PUT(
   }
 }
 
-// DELETE - delete movie
+// DELETE - Delete Movie
+// Admin only
 export async function DELETE(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const authenticated = await isAdminAuthenticated();
+
+  if (!authenticated) {
+    return NextResponse.json(
+      { error: "Unauthorized" },
+      { status: 401 }
+    );
+  }
+
   try {
     const { id } = await params;
-
     const movieId = Number(id);
 
     if (isNaN(movieId)) {

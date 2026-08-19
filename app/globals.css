@@ -52,3 +52,69 @@ body {
     transform: translateY(0);
   }
 }
+
+
+
+
+
+/* ================================
+   RS-MT SPLASH LOGO
+================================ */
+
+.r-logo {
+  width: 100px;
+  height: 100px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #dc2626;
+  font-size: 72px;
+  font-weight: 900;
+  font-family: Arial, Helvetica, sans-serif;
+
+  text-shadow:
+    0 0 10px rgba(220, 38, 38, 0.8),
+    0 0 30px rgba(220, 38, 38, 0.5),
+    0 0 60px rgba(220, 38, 38, 0.3);
+
+  animation: rsLogoIntro 1.4s ease-out forwards;
+}
+
+@keyframes rsLogoIntro {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) rotate(-20deg);
+    filter: blur(12px);
+  }
+
+  40% {
+    opacity: 1;
+    transform: scale(1.15) rotate(5deg);
+    filter: blur(0);
+  }
+
+  70% {
+    transform: scale(0.95) rotate(0deg);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-spin-slow {
+  animation: rsSpin 3s linear infinite;
+}
+
+@keyframes rsSpin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
