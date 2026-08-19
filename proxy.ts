@@ -24,30 +24,23 @@ async function isAuthenticated(request: NextRequest) {
   }
 }
 
-export async function middleware(request: NextRequest) {
-  const pathname = request.nextUrl.pathname;
+export async function proxy(request: NextRequest) {
+  const { pathname } = request.nextUrl;
 
-  // Protect dashboard
-  if (pathname.startsWith("/dashboard")) {
-    const authenticated = await isAuthenticated(request);
-
-    if (!authenticated) {
-      return NextResponse.redirect(
-        new URL("/login", request.url)
-      );
-    }
-  }
-
-  // Protect admin create/edit pages
   const protectedPages = [
+    "/dashboard",
     "/movies/new",
     "/movies/edit",
     "/tvshows/new",
     "/tvshows/edit",
+    "/seasons/new",
+    "/seasons/edit",
+    "/episodes/new",
+    "/episodes/edit",
   ];
 
   const needsProtection = protectedPages.some((path) =>
-    pathname.startsWith(path)
+    pathname === path || pathname.startsWith(`${path}/`)
   );
 
   if (needsProtection) {
@@ -70,5 +63,9 @@ export const config = {
     "/movies/edit/:path*",
     "/tvshows/new/:path*",
     "/tvshows/edit/:path*",
+    "/seasons/new/:path*",
+    "/seasons/edit/:path*",
+    "/episodes/new/:path*",
+    "/episodes/edit/:path*",
   ],
 };
