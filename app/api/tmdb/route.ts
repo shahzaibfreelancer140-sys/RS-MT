@@ -16,54 +16,86 @@ export async function GET() {
       accept: "application/json",
     };
 
-    const [popular, nowPlaying, topRated, upcoming] =
-      await Promise.all([
-        fetch(
-          "https://api.themoviedb.org/3/movie/popular?language=en-US&page=1",
-          { headers }
-        ),
-        fetch(
-          "https://api.themoviedb.org/3/movie/now_playing?language=en-US&page=1",
-          { headers }
-        ),
-        fetch(
-          "https://api.themoviedb.org/3/movie/top_rated?language=en-US&page=1",
-          { headers }
-        ),
-        fetch(
-          "https://api.themoviedb.org/3/movie/upcoming?language=en-US&page=1",
-          { headers }
-        ),
-      ]);
+    const [
+      popular,
+      nowPlaying,
+      topRated,
+      upcoming,
+      tvPopular,
+      tvAiringToday,
+    ] = await Promise.all([
+      fetch(
+        "https://api.themoviedb.org/3/movie/popular?language=en-US&page=1",
+        { headers }
+      ),
+
+      fetch(
+        "https://api.themoviedb.org/3/movie/now_playing?language=en-US&page=1",
+        { headers }
+      ),
+
+      fetch(
+        "https://api.themoviedb.org/3/movie/top_rated?language=en-US&page=1",
+        { headers }
+      ),
+
+      fetch(
+        "https://api.themoviedb.org/3/movie/upcoming?language=en-US&page=1",
+        { headers }
+      ),
+
+      fetch(
+        "https://api.themoviedb.org/3/tv/popular?language=en-US&page=1",
+        { headers }
+      ),
+
+      fetch(
+        "https://api.themoviedb.org/3/tv/airing_today?language=en-US&page=1",
+        { headers }
+      ),
+    ]);
 
     if (
       !popular.ok ||
       !nowPlaying.ok ||
       !topRated.ok ||
-      !upcoming.ok
+      !upcoming.ok ||
+      !tvPopular.ok ||
+      !tvAiringToday.ok
     ) {
       throw new Error("TMDB request failed");
     }
 
-    const data = await Promise.all([
+    const [
+      popularData,
+      nowPlayingData,
+      topRatedData,
+      upcomingData,
+      tvPopularData,
+      tvAiringTodayData,
+    ] = await Promise.all([
       popular.json(),
       nowPlaying.json(),
       topRated.json(),
       upcoming.json(),
+      tvPopular.json(),
+      tvAiringToday.json(),
     ]);
 
     return NextResponse.json({
-      popular: data[0].results,
-      nowPlaying: data[1].results,
-      topRated: data[2].results,
-      upcoming: data[3].results,
+      popular: popularData.results,
+      nowPlaying: nowPlayingData.results,
+      topRated: topRatedData.results,
+      upcoming: upcomingData.results,
+      tvPopular: tvPopularData.results,
+      tvAiringToday: tvAiringTodayData.results,
     });
   } catch (error) {
     console.error("TMDB ERROR:", error);
 
     return NextResponse.json(
       {
-        message: "Failed to fetch TMDB movies",
+        message: "Failed to fetch TMDB data",
         error: String(error),
       },
       { status: 500 }
